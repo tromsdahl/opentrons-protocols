@@ -86,7 +86,7 @@ def run(ctx: protocol_api.ProtocolContext):
     # ===== TIMING & TEMP CONSTANTS =====
     MAGNET_TIME = 3 if dry_run else 120         # 2 min Bead pellet time
     WASH_TIME = 3 if dry_run else 120           # 2 min shaking
-    RED_ALK_TIME = 3 if dry_run else 1800       # 30 min reduction/alkylation time
+    RED_ALK_TIME = 3 if dry_run else 60         # 10 min reduction/alkylation time
     DIGESTION_TIME = 3 if dry_run else 7200     # 120 min digestion
 
     RED_ALK_TEMP = 25 if dry_run else 60        # 60C for reduction/alkylation
@@ -94,7 +94,7 @@ def run(ctx: protocol_api.ProtocolContext):
 
     # ===== LIQUID HANDLING CONSTANTS =====
     VOLUME = {
-        'red_alk_buff': ((2 * sample_vol) / 3) + 3.33,
+        'red_alk_buff': ((2 * sample_vol) / 3) + 3 + (1/3),
         'pac_acn' : (2.5 * sample_vol) + 12.5,
         'acn' : 171.5,
         'etoh' : 180,
@@ -109,7 +109,7 @@ def run(ctx: protocol_api.ProtocolContext):
     STANDARD_RATE = 0.6           # Aspiration rate
     
     SHAKE_SPEED = 2000             # RPM
-    TRYPSIN_SHAKE_SPEED = 1000       # RPM
+    TRYPSIN_SHAKE_SPEED = 1000     # RPM
     
     COL_RANGE = range(col_start, col_start + num_col)
 
@@ -165,13 +165,13 @@ def run(ctx: protocol_api.ProtocolContext):
         "agilent_6_reservoir_47ml", location="B2")
     waste_plate = ctx.load_labware(
         "agilent_6_reservoir_47ml", location="C2")
-    beads_plate = ctx.load_labware(
+    beads_plate = ctx.load_labware( # to be removed
         "opentrons_96_wellplate_200ul_pcr_full_skirt", location='D2')
-    beads = beads_plate.rows()[0]
-    reagent_plate_2 = ctx.load_labware(
+    beads = beads_plate.rows()[0] # to be removed
+    reagent_plate_2 = ctx.load_labware( # to be removed
         "agilent_6_reservoir_47ml", location="C3")
     
-    ctx.load_waste_chute()  # Waste chute available if needed
+    ctx.load_waste_chute()
     
     # ===== REAGENT CONFIGURATION =====
     REAGENTS = {
