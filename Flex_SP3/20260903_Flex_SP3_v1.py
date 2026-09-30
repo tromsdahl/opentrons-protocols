@@ -59,6 +59,69 @@ def add_parameters(parameters):
         maximum=50
     )
 
+    parameters.add_str(
+        variable_name="red_alk_loc",
+        display_name="Location of Reducation/Alkylation Buffer",
+        description="Which well is the red/alk buffer located?",
+        default="A1",
+        choices=[
+            {"display_name": "A1", "value": "A1"},
+            {"display_name": "A2", "value": "A2"},
+            {"display_name": "A3", "value": "A3"},
+            {"display_name": "A4", "value": "A4"},
+            {"display_name": "A5", "value": "A5"},
+            {"display_name": "A6", "value": "A6"},
+            {"display_name": "A7", "value": "A7"},
+            {"display_name": "A8", "value": "A8"},
+            {"display_name": "A9", "value": "A9"},
+            {"display_name": "A10", "value": "A10"},
+            {"display_name": "A11", "value": "A11"},
+            {"display_name": "A12", "value": "A12"},
+        ],
+    )
+
+    parameters.add_str(
+            variable_name="trypsin_loc",
+            display_name="Location of trypsin enzyme in 50 mM acetic acid",
+            description="Which well is the trypsin located?",
+            default="A2",
+            choices=[
+                {"display_name": "A1", "value": "A1"},
+                {"display_name": "A2", "value": "A2"},
+                {"display_name": "A3", "value": "A3"},
+                {"display_name": "A4", "value": "A4"},
+                {"display_name": "A5", "value": "A5"},
+                {"display_name": "A6", "value": "A6"},
+                {"display_name": "A7", "value": "A7"},
+                {"display_name": "A8", "value": "A8"},
+                {"display_name": "A9", "value": "A9"},
+                {"display_name": "A10", "value": "A10"},
+                {"display_name": "A11", "value": "A11"},
+                {"display_name": "A12", "value": "A12"},
+            ],
+        )
+
+    parameters.add_str(
+            variable_name="tfa_loc",
+            display_name="Location of 5% TFA",
+            description="Which well is the 5% TFA located?",
+            default="A3",
+            choices=[
+                {"display_name": "A1", "value": "A1"},
+                {"display_name": "A2", "value": "A2"},
+                {"display_name": "A3", "value": "A3"},
+                {"display_name": "A4", "value": "A4"},
+                {"display_name": "A5", "value": "A5"},
+                {"display_name": "A6", "value": "A6"},
+                {"display_name": "A7", "value": "A7"},
+                {"display_name": "A8", "value": "A8"},
+                {"display_name": "A9", "value": "A9"},
+                {"display_name": "A10", "value": "A10"},
+                {"display_name": "A11", "value": "A11"},
+                {"display_name": "A12", "value": "A12"},
+            ],
+        )
+
 
 def run(ctx: protocol_api.ProtocolContext):
     """Execute SP3 proteomics protocol.
@@ -73,6 +136,9 @@ def run(ctx: protocol_api.ProtocolContext):
     num_col = ctx.params.num_col
     col_start = ctx.params.col_start - 1  # Convert to 0-indexed
     sample_vol = ctx.params.sample_amt
+    red_alk_loc = ctx.params.red_alk_loc
+    trypsin_loc = ctx.params.trypsin_loc
+    tfa_loc = ctx.params.tfa_loc
 
     # Parameter validation
     if not 1 <= num_col <= 12:
@@ -82,11 +148,14 @@ def run(ctx: protocol_api.ProtocolContext):
     if col_start + num_col > 12:
         raise ValueError(f"Sample range exceeds 12 columns: "
                          f"columns {col_start + 1}-{col_start + num_col} invalid")
+    if red_alk_loc = trypsin_loc:
+        raise ValueError(f"Red/Alk buffer and trypsin cannot occupy same well: "
+                         f"got red/alk: {red_alk_loc}, and trypsin: {trypsin_loc}")
 
     # ===== TIMING & TEMP CONSTANTS =====
     MAGNET_TIME = 3 if dry_run else 120         # 2 min Bead pellet time
     WASH_TIME = 3 if dry_run else 120           # 2 min shaking
-    RED_ALK_TIME = 3 if dry_run else 60         # 10 min reduction/alkylation time
+    RED_ALK_TIME = 3 if dry_run else 600         # 10 min reduction/alkylation time
     DIGESTION_TIME = 3 if dry_run else 7200     # 120 min digestion
 
     RED_ALK_TEMP = 25 if dry_run else 60        # 60C for reduction/alkylation
@@ -108,8 +177,8 @@ def run(ctx: protocol_api.ProtocolContext):
     AIR_GAP = 20                  # µL
     STANDARD_RATE = 0.6           # Aspiration rate
     
-    SHAKE_SPEED = 2000             # RPM
-    TRYPSIN_SHAKE_SPEED = 1000     # RPM
+    SHAKE_SPEED = 2000            # RPM
+    TRYPSIN_SHAKE_SPEED = 1000    # RPM
     
     COL_RANGE = range(col_start, col_start + num_col)
 
@@ -117,7 +186,7 @@ def run(ctx: protocol_api.ProtocolContext):
     
     # Collection plate for peptides
     collection_plate = ctx.load_labware(
-        'opentrons_96_wellplate_200ul_pcr_full_skirt', location='D2')
+        'opentrons_96_wellplate_200ul_pcr_full_skirt', location='B4')
     collected_peptides = collection_plate.rows()[0]
     
     # Tip racks
@@ -163,19 +232,16 @@ def run(ctx: protocol_api.ProtocolContext):
     # Reagent and waste plates
     reagent_plate_1 = ctx.load_labware(
         "agilent_6_reservoir_47ml", location="B2")
+    reagent_plate_2 = ctx.load_labware(
+        "axygen_12_reservoir_22000ul", location="C2")
     waste_plate = ctx.load_labware(
-        "agilent_6_reservoir_47ml", location="C2")
-    beads_plate = ctx.load_labware( # to be removed
-        "opentrons_96_wellplate_200ul_pcr_full_skirt", location='D2')
-    beads = beads_plate.rows()[0] # to be removed
-    reagent_plate_2 = ctx.load_labware( # to be removed
-        "agilent_6_reservoir_47ml", location="C3")
+        "agilent_6_reservoir_47ml", location="D2")
     
     ctx.load_waste_chute()
     
     # ===== REAGENT CONFIGURATION =====
     REAGENTS = {
-        'lysis': reagent_plate_1['A1'],
+        'red_alk': reagent_plate_2['A1'],
         'ethanol': reagent_plate_1['A2'],
         'wash_1': reagent_plate_1['A3'],
         'wash_2': reagent_plate_1['A4'],
