@@ -6,7 +6,7 @@ Experiment: SP3 on Flex, no manual intervention
 
 Objectives: Perform SP3 proteomics preparation on samples
 - Alkylation and reduction
-- Wash and protein aggreagtion capture
+- Wash and protein aggregation capture
 - Trypsin digestion
 - TFA quenching and transfer of digested peptides
 """
