@@ -1,6 +1,6 @@
 """Ceres Nanoparticle Protocol for Opentrons Flex Robot
 
-Project: Ceres nanoparticle on Flex Robot (V1)
+Project: Ceres nanoparticle on Flex Robot (V2)
 Date: 10/05/2026
 Experiment: Proteomics from Plasma/Serum Samples
 
@@ -13,10 +13,11 @@ Objectives: Perform nanoparticle enrichment using Ceres magnetic isolation proto
 """
 
 from opentrons import protocol_api
+from opentrons.protocol_api import OFF_DECK
 
 # Metadata
 metadata = {
-    'protocolName': 'Ceres Nanoparticle Protocol for Opentrons Flex Robot (V1)',
+    'protocolName': 'Ceres Nanoparticle Enrichment Protocol (V2)',
     'description': 'Perform nanoparticle enrichment using Ceres magnetic isolation protocol.',
     'author': 'TR'
 }
@@ -75,7 +76,7 @@ def run(ctx: protocol_api.ProtocolContext):
     MAGNET_TIME = 5 if dry_run else 30          # 30 sec Bead pellet time
     SHAKE_TIME = 5 if dry_run else 30           # 30 sec shaking
     RED_TIME = 5 if dry_run else 1200           # 20 min reduction time
-    RED_TEMP = 65                           # 65C Reduction temperature
+    RED_TEMP = 65                               # 65C Reduction temperature
     RED_COOL_TIME = 5 if dry_run else 300       # 5 min to allow heater-shaker module to cool before alkylation
     ALK_TIME = 5 if dry_run else 1200           # 20 min alkylation time
     DIGEST_TIME = 5 if dry_run else 7200        # 2 hr digestion time
@@ -110,9 +111,9 @@ def run(ctx: protocol_api.ProtocolContext):
     # ===== LABWARE SETUP =====
     
     # Collection plate for eluted peptides
-    collection_plate = ctx.load_labware(
-        'opentrons_96_wellplate_200ul_pcr_full_skirt', location='D2')
-    collected_peptides = collection_plate.rows()[0]
+    #collection_plate = ctx.load_labware(
+    #    'opentrons_96_wellplate_200ul_pcr_full_skirt', location='D2')
+    #collected_peptides = collection_plate.rows()[0]
     
     # Tip racks
     tips_50_reduction = ctx.load_labware(
@@ -161,6 +162,8 @@ def run(ctx: protocol_api.ProtocolContext):
         "agilent_6_reservoir_47ml", location="B2")
     reagent_plate_2 = ctx.load_labware(
         "axygen_12_reservoir_22000ul", location="C2")
+    waste_plate = ctx.load_labware(
+        "agilent_6_reservoir_47ml", location="D2")
     
     ctx.load_waste_chute()
     
@@ -184,12 +187,12 @@ def run(ctx: protocol_api.ProtocolContext):
     }
     
     WASTE_DISTRIBUTION = {
-        'initial_supernatant': reagent_plate_1['A6'],
-        'water_wash_1': reagent_plate_1['A1'],
-        'water_wash_2': reagent_plate_1['A2'],
-        'ABC_wash': reagent_plate_1['A3'],
-        'water_wash_3': reagent_plate_1['A4'],
-        'water_wash_4': reagent_plate_1['A5'],
+        'initial_supernatant': waste_plate['A6'],
+        'water_wash_1': waste_plate['A1'],
+        'water_wash_2': waste_plate['A2'],
+        'ABC_wash': waste_plate['A3'],
+        'water_wash_3': waste_plate['A4'],
+        'water_wash_4': waste_plate['A5'],
         'red_alk_supernatant': reagent_plate_2['A12'],
     }
 
@@ -219,9 +222,9 @@ def run(ctx: protocol_api.ProtocolContext):
         for col in COL_RANGE:
             pipette.aspirate(volume, reagent_well, rate=STANDARD_RATE)
             pipette.aspirate(AIR_GAP, reagent_well.top(10), rate=STANDARD_RATE)
-            pipette.dispense(volume + AIR_GAP, samples[col].top(1), rate=STANDARD_RATE)
-            pipette.blow_out(samples[col].top(1))
-            pipette.touch_tip(samples[col], radius=0.15, v_offset=0.2, speed=60)
+            pipette.dispense(volume + AIR_GAP, samples[col].top(-0.5), rate=STANDARD_RATE)
+            pipette.blow_out(samples[col].top(-0.5))
+            #pipette.touch_tip(samples[col], radius=0.15, v_offset=0.2, speed=60)
         
         if dispose_after:
             dispose_tip(pipette)
@@ -254,9 +257,9 @@ def run(ctx: protocol_api.ProtocolContext):
         for col in COL_RANGE:
             pipette.aspirate(volume, bead_well, rate=STANDARD_RATE)
             pipette.aspirate(AIR_GAP, bead_well.top(1), rate=STANDARD_RATE)
-            pipette.dispense(volume + AIR_GAP, samples[col].top(1), rate=STANDARD_RATE)
-            pipette.blow_out(samples[col].top(1))
-            pipette.touch_tip(samples[col], radius=0.15, v_offset=0.2, speed=60)
+            pipette.dispense(volume + AIR_GAP, samples[col].top(-0.5), rate=STANDARD_RATE)
+            pipette.blow_out(samples[col].top(-0.5))
+            #pipette.touch_tip(samples[col], radius=0.15, v_offset=0.2, speed=60)
         
         dispose_tip(pipette)  # Bead tips are not reused
     
@@ -320,7 +323,7 @@ def run(ctx: protocol_api.ProtocolContext):
             p1000_multi.aspirate(AIR_GAP, reagent_well.top(10), rate=STANDARD_RATE)
             p1000_multi.dispense(volume + AIR_GAP, samples[col].top(1), rate=STANDARD_RATE)
             p1000_multi.blow_out(samples[col].top(1))
-            p1000_multi.touch_tip(samples[col], radius=0.15, v_offset=0.2, speed=60)
+            #p1000_multi.touch_tip(samples[col], radius=0.15, v_offset=0.2, speed=60)
         if dispose_after:
             dispose_tip(p1000_multi)
         else:
@@ -393,7 +396,7 @@ def run(ctx: protocol_api.ProtocolContext):
         p50_multi.dispense(SMALL_AIR_GAP, samples[col].top(1), rate=STANDARD_RATE) # dispense air gap above sample to prevent bubbles
         p50_multi.dispense(VOLUME['tcep'], samples[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
         p50_multi.blow_out(samples[col].top(-2))
-        p50_multi.touch_tip(samples[col], radius=0.9, v_offset=-2, speed=60)
+        #p50_multi.touch_tip(samples[col], radius=0.9, v_offset=-2, speed=60)
         dispose_tip(p50_multi)
     heater_shaker.set_and_wait_for_shake_speed(SHAKE_SPEED)
     ctx.delay(SHAKE_TIME, msg="Mixing TCEP with samples.")
@@ -416,7 +419,7 @@ def run(ctx: protocol_api.ProtocolContext):
         p50_multi.dispense(SMALL_AIR_GAP, samples[col].top(1), rate=STANDARD_RATE) # dispense air gap above sample to prevent bubbles
         p50_multi.dispense(VOLUME['iodoacetamide'], samples[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
         p50_multi.blow_out(samples[col].top(-2))
-        p50_multi.touch_tip(samples[col], radius=0.9, v_offset=-2, speed=60)
+        #p50_multi.touch_tip(samples[col], radius=0.9, v_offset=-2, speed=60)
         dispose_tip(p50_multi)
     heater_shaker.set_and_wait_for_shake_speed(SHAKE_SPEED)
     ctx.delay(SHAKE_TIME, msg="Mixing iodoacetamide with samples.")
@@ -424,7 +427,10 @@ def run(ctx: protocol_api.ProtocolContext):
 
     ctx.delay(ALK_TIME, msg="Alkylating proteins with iodoacetamide at room temperature.")
 
+    # remove supernatant after reduction and alkylation
+    move_to_magnetic()
     remove_supernatant(VOLUME['ABC_alk_red'] + VOLUME['tcep'] + VOLUME['iodoacetamide'], WASTE_DISTRIBUTION['red_alk_supernatant'])
+    move_to_heater_shaker()
 
     # Wash 3: ABC wash
     wash_and_pellet(REAGENTS['ABC_wash'], VOLUME['ABC_wash'], WASTE_DISTRIBUTION['ABC_wash'], msg="Washing beads with ABC buffer.", dispose_after=True, tip_index=5)
@@ -446,6 +452,15 @@ def run(ctx: protocol_api.ProtocolContext):
     ctx.move_labware(tips_50_reduction, new_location="A4", use_gripper=True)
     ctx.move_labware(tips_50_trypsin, new_location="A2", use_gripper=True)
 
+    ctx.move_labware(waste_plate, new_location=OFF_DECK, use_gripper=False)
+    
+    ctx.pause("Please add trypsin to the 12-well reagent plate at position A9. Additionally remove the waste plate from D2 and replace with the 96-well collection plate for the eluted peptides. Press resume when ready.")
+
+    # Collection plate for eluted peptides
+    collection_plate = ctx.load_labware(
+        'opentrons_96_wellplate_200ul_pcr_full_skirt', location='D2')
+    collected_peptides = collection_plate.rows()[0]
+
     ## add trypsin for digestion
     for col in COL_RANGE:
         p50_multi.pick_up_tip(trypsin_tips[col])
@@ -454,7 +469,7 @@ def run(ctx: protocol_api.ProtocolContext):
         p50_multi.dispense(SMALL_AIR_GAP, samples[col].top(1), rate=STANDARD_RATE) # dispense air gap above sample to prevent bubbles
         p50_multi.dispense(VOLUME['trypsin'], samples[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
         p50_multi.blow_out(samples[col].top(-2))
-        p50_multi.touch_tip(samples[col], radius=0.9, v_offset=-2, speed=60)
+        #p50_multi.touch_tip(samples[col], radius=0.9, v_offset=-2, speed=60)
         dispose_tip(p50_multi)
     heater_shaker.set_and_wait_for_shake_speed(SHAKE_SPEED)
     ctx.delay(5, msg="Mixing trypsin with samples.")
@@ -480,7 +495,7 @@ def run(ctx: protocol_api.ProtocolContext):
         p50_multi.dispense(SMALL_AIR_GAP, samples[col].top(1), rate=STANDARD_RATE) # dispense air gap above sample to prevent bubbles
         p50_multi.dispense(VOLUME['TFA_2pct'], samples[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
         p50_multi.blow_out(samples[col].top(-2))
-        p50_multi.touch_tip(samples[col], radius=0.9, v_offset=-2, speed=60)
+        #p50_multi.touch_tip(samples[col], radius=0.9, v_offset=-2, speed=60)
         dispose_tip(p50_multi)
     heater_shaker.set_and_wait_for_shake_speed(SHAKE_SPEED)
     ctx.delay(SHAKE_TIME, msg="Mixing TFA with samples.")
@@ -493,7 +508,7 @@ def run(ctx: protocol_api.ProtocolContext):
         p50_multi.aspirate(VOLUME['TEAB'] + VOLUME['trypsin'] + VOLUME['TFA_2pct'], samples[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
         p50_multi.dispense(VOLUME['TEAB'] + VOLUME['trypsin'] + VOLUME['TFA_2pct'], collected_peptides[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
         p50_multi.blow_out(collected_peptides[col].top(-5))
-        p50_multi.touch_tip(collected_peptides[col], radius=0.9, v_offset=-2, speed=60)
+        #p50_multi.touch_tip(collected_peptides[col], radius=0.9, v_offset=-2, speed=60)
         dispose_tip(p50_multi)
     
     # Discard supernatant tips

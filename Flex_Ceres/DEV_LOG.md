@@ -9,16 +9,27 @@ Initiated writing a Python protocol for Ceres nanoparticle enrichment isolation 
 
 #### Deck Layout
 
-|   |  1  |  2  |  3  |  4  |
-|---|-----|-----|-----|-----|
-| A |  TC |     |     |     |
-| B |  TC |     |     |     |
-| C |  HS |     |     |     |
-| D |  MB |     |     |     |
+|   |  1  |  2    |  3   |  4  |
+|---|-----|-------|------|-----|
+| A |  TC |  RT   |  AT  |     |
+| B |  TC |  R1   |  SoT | TrT |
+| C |  HS |  R2   |  SuT | TT  |
+| D |  MB |  CP   |  T   |  ET |
 
 - TC: Thermocycler
 - HS: Heater shaker with deep well adapter
 - MP: Magnetic Block
+- RT: p50 Reduction tips
+- R1: 6-well reagent plate
+- R2: 12-well reagent plate
+- CP: 96-well PCR collection plate
+- AT: p50 alkylation tips
+- SoT: Solvent tips
+- SuT: Supernatant tips
+- T: Trash chute
+- TrT: p50 Trypsin tips
+- TT: p50 TFA tips
+- ET: p50 elution tips
 
 #### Manual steps
 ##### Protein enrichment
@@ -42,4 +53,38 @@ Initiated writing a Python protocol for Ceres nanoparticle enrichment isolation 
 14. Repeat wash once more (steps 10-13)
 
 ##### Protein digestion
-1. 
+1. Add 100 uL 50 mM ABC
+2. Vortex 30 sec
+3. Add 5 uL of 100 mM TCEP <- *This was changed from the original protocol*
+4. Vortex 30 sec
+5. Incubate at 65C for 20 min <- *This was changed from the original protocol*
+6. Add 5 uL of 187.5 mM iodoacetamide
+7. Vortex for 30 sec
+8. Incubate at RT for 20 min protected from the light
+9. Place on magnetic rack for 30 sec
+10. Remove supernatant
+11. Wash with 500 uL of ABC
+12. Remove wash
+13. Wash with 500 uL water 2x, place on magnet and remove wash
+14. Add 40 uL of TEAB, vortex.
+15. Add 5 uL of trypsin.
+16. Incubate at 70C for 2 h.
+17. Add 5 uL of 2% TFA
+18. Place on magnet and remove digested peptides
+
+### 10/06/2026 - Manual Tests
+Tested plasma with buffer and beads. The shaker needs to be set to 2200 rpm to fully resuspend beads. Thirty seconds is sufficient for this. Placing the plate on the magnetic block for 30 sec is also sufficient to pellet particles and form a ring.
+
+Also tested the subsequent washes with water and TEAB where beads start to become clumpy. Once the water is added there is a little bit of a flimy layer at the top where some bead loss may occur but seems unavoidable. Otherwise all the other steps and volumes see to be ok.
+
+Created an initial version 1 of the protocol to test. Note that supernatant tips and supernatant tips are reused until the completion of the protocol.
+
+#### Dry run test
+Some things to possibly change:
+- [X] The dry run test revealed a missing move to magnetic step to remove the supernatant after the reduction and alkylation. *added*
+- [X] Remove pretty much all touch tip steps. They're kind of awkward and clunky. *removed*
+- [X] Lower dispensing height to 0 mm or -1 mm so it is within wells (volume is much lower than dispensing height) <- *changed to -0.5 mm*
+- [X] Possibly add waste plate where collection plate is and then swap it out to add collection plate
+- [X] Add pause step before trypsin digest to add trypsin to reagent well
+
+Made a version 2 that should be ready to test with dry run
