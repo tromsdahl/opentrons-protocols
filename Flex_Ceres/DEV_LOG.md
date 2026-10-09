@@ -88,3 +88,22 @@ Some things to possibly change:
 - [X] Add pause step before trypsin digest to add trypsin to reagent well
 
 Made a version 2 that should be ready to test with dry run
+
+### 10/8/2026 - Test run with platelet poor and platelet rich plasma
+For some reason there was no digest transferred to the collection plate. It might be that the shaking at 2200 rpm is too much for so little volume (40 uL TEAB + 5 uL trypsin). Or that 2 hrs at 70C would've dried out the solution.
+
+To test:
+- [X] 45 uL in wells and shake at 2200 rpm. Is there volume still at the bottom or is it all stuck to the sides?
+    - After shaking the plate at 2200 rpm with 45 uL of 50 mM TEAB the solution mostly went back to the bottom. There were a few droplets on the sides but not really enough to explain why there wasn't a final digest solution in the collection plate.
+
+- [X] 45 uL at 70C for 2 hrs uncovered. Does the solution evaporate?
+    - Definitely the issue that the temperature is too high with such a low volume. In the test the solution completely evaporated.
+
+---
+
+Some possible improvements:
+
+- Assuming there's solution leftover and it is successfully transferrd to the collection plate. Move the collection plate to the thermocycler at 4C to prevent evaporation and to keep the samples at low temperature.
+- Increase volume transfers to be at least 10 uL for TCEP, IAM, Trypsin, and TFA to make the pipetting easier. Possibly increase TEAB volume so the final reaction volume is 100 uL.
+- Remove high RPM shake after adding trypsin. Just incubate at room temperature with moderate shaking (beads will have been resuspended after adding TEAB).
+
