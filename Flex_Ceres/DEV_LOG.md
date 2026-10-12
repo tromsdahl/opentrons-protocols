@@ -107,3 +107,14 @@ Some possible improvements:
 - Increase volume transfers to be at least 10 uL for TCEP, IAM, Trypsin, and TFA to make the pipetting easier. Possibly increase TEAB volume so the final reaction volume is 100 uL.
 - Remove high RPM shake after adding trypsin. Just incubate at room temperature with moderate shaking (beads will have been resuspended after adding TEAB).
 
+### 10/12/2026: V3 improvements
+To change/add:
+
+- [X] 47C for 2 hr for tryptic digestion
+- [X] remove shaking after adding trypsin; add slow, mild shaking for duration of digestion
+- [-] increase volume transfers for TCEP, IAM, Tryp, TFA?
+    - Instead of increasing volumes, I've added a third reagent plate in the form of a 96-well plate in the thermocycler to keep trypsin, tcep and IAM at low temperatures before their use
+- [ ] Move collection plate to thermocycler? <- *Skip this for now to minimize the chances of condensation becoming a problem*
+- [X] Add back in touch tips (for beads and add reagent, but not for wash_and_pellet); lowered dispensing height as well
+- [X] Add a quick mix before each aliquoting of beads to ensure resuspended
+- [X] Changed reduction time from 20 min to 10 min (5 min wait time afterward to let heater-shaker cooldown)
