@@ -118,3 +118,18 @@ To change/add:
 - [X] Add back in touch tips (for beads and add reagent, but not for wash_and_pellet); lowered dispensing height as well
 - [X] Add a quick mix before each aliquoting of beads to ensure resuspended
 - [X] Changed reduction time from 20 min to 10 min (5 min wait time afterward to let heater-shaker cooldown)
+
+### 10/13/2026: Testing version 3 of protocol
+Testing version 3 with platelet poor and rich plasma.
+
+The thermocycler seems to accumulate a lot of condensation which could dilute the reagents in the plate and could damage the electronics of the thermocycler. Maybe don't use the chilling block but only stop the protocol to prompt the user to add IAM and trypsin when needed so that the volumes of those reagents can be kept low rather than putting them in the 12-well reservoir.
+
+To be determined: Is there enough liquid left after the digestion reaction to transfer? Or should more TEAB be added (either before digestion or after)?
+- Yes, the full 50 uL seem to be collected successfully in the collection plate. This shouldn't need to be changed.
+
+Changes made:
+- [X] Add pause point before alkylation to add the IAM to the 96-well plate
+- [X] Add pause point before trypsin digest to add the trypsin to the 96 well plate
+- [X] Remove setting the block temperature to 4C.
+
+Protocol updated to v3.1.

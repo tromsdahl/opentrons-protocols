@@ -1,6 +1,6 @@
 """Ceres Nanoparticle Protocol for Opentrons Flex Robot
 
-Project: Ceres nanoparticle on Flex Robot (V3)
+Project: Ceres nanoparticle on Flex Robot (V3.1)
 Date: 10/05/2026
 Experiment: Proteomics from Plasma/Serum Samples
 
@@ -17,7 +17,7 @@ from opentrons.protocol_api import OFF_DECK
 
 # Metadata
 metadata = {
-    'protocolName': 'Ceres Nanoparticle Enrichment Protocol (V3)',
+    'protocolName': 'Ceres Nanoparticle Enrichment Protocol (V3.1)',
     'description': 'Perform nanoparticle enrichment using Ceres magnetic isolation protocol.',
     'author': 'TR'
 }
@@ -377,7 +377,7 @@ def run(ctx: protocol_api.ProtocolContext):
         move_to_heater_shaker()
 
     # ===== PROTOCOL START =====
-    tc_module.start_set_block_temperature(4) # Keep thermocycler block at 4C for reagent plate 3
+    #tc_module.start_set_block_temperature(4) # Keep thermocycler block at 4C for reagent plate 3
     tc_module.open_lid()
     
     ctx.comment("Starting Ceres nanoparticle purification protocol")
@@ -449,7 +449,7 @@ def run(ctx: protocol_api.ProtocolContext):
     ctx.delay(RED_COOL_TIME, msg="Cooling samples to room temperature before alkylation.")
 
     # Perform alkylation
-    #ctx.pause("Please add iodoacetamide to the reagent plate. Press resume when ready.")
+    ctx.pause("Please add iodoacetamide to the 96-well reagent plate on the thermocycler. Press resume when ready.")
 
     ## add IAM for alkylation
     for col in COL_RANGE:
@@ -494,7 +494,7 @@ def run(ctx: protocol_api.ProtocolContext):
 
     ctx.move_labware(waste_plate, new_location=OFF_DECK, use_gripper=False)
     
-    ctx.pause("Please remove the waste plate from D2 and replace with the 96-well collection plate for the eluted peptides. Press resume when ready.")
+    ctx.pause("Please remove the waste plate from D2 and replace with the 96-well collection plate for the eluted peptides. Additionally, add trypsin enzyme to the 96-well reagent plate on the thermocycler. Press resume when ready.")
 
     # Collection plate for eluted peptides
     collection_plate = ctx.load_labware(
@@ -556,6 +556,6 @@ def run(ctx: protocol_api.ProtocolContext):
         dispose_tip(p1000_multi)
     
     # deactivate thermocycler module
-    tc_module.deactivate_block()
+    #tc_module.deactivate_block()
 
     ctx.comment("Ceres nanoparticle purification protocol completed. Please remove the collection plate with digested peptides.")
