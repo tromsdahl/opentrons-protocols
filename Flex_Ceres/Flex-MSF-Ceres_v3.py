@@ -1,6 +1,6 @@
 """Ceres Nanoparticle Protocol for Opentrons Flex Robot
 
-Project: Ceres nanoparticle on Flex Robot (V3.1)
+Project: Ceres nanoparticle on Flex Robot (V3.2)
 Date: 10/05/2026
 Experiment: Proteomics from Plasma/Serum Samples
 
@@ -17,7 +17,7 @@ from opentrons.protocol_api import OFF_DECK
 
 # Metadata
 metadata = {
-    'protocolName': 'Ceres Nanoparticle Enrichment Protocol (V3.1)',
+    'protocolName': 'Ceres Nanoparticle Enrichment Protocol (V3.2)',
     'description': 'Perform nanoparticle enrichment using Ceres magnetic isolation protocol.',
     'author': 'TR'
 }
@@ -123,12 +123,12 @@ def run(ctx: protocol_api.ProtocolContext):
         'bead_C': 66,
         'H2O_wash': 450,
         'ABC_alk_red': 100,
-        'tcep': 5,
-        'iodoacetamide': 5,
+        'tcep': 10,
+        'iodoacetamide': 10,
         'ABC_wash': 450,
-        'TEAB': 40,
-        'trypsin': 5,
-        'TFA_2pct': 5,
+        'TEAB': 80,
+        'trypsin': 10,
+        'TFA_2pct': 10,
     }
     
     ASPIRATE_HEIGHT = 1.5         # mm above bottom
@@ -544,8 +544,10 @@ def run(ctx: protocol_api.ProtocolContext):
     move_to_magnetic()
     for col in COL_RANGE:
         p50_multi.pick_up_tip(elution_tips[col])
-        p50_multi.aspirate(VOLUME['TEAB'] + VOLUME['trypsin'] + VOLUME['TFA_2pct'], samples[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
-        p50_multi.dispense(VOLUME['TEAB'] + VOLUME['trypsin'] + VOLUME['TFA_2pct'], collected_peptides[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
+        p50_multi.aspirate((VOLUME['TEAB'] + VOLUME['trypsin'] + VOLUME['TFA_2pct'])/2, samples[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
+        p50_multi.dispense((VOLUME['TEAB'] + VOLUME['trypsin'] + VOLUME['TFA_2pct'])/2, collected_peptides[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
+        p50_multi.aspirate((VOLUME['TEAB'] + VOLUME['trypsin'] + VOLUME['TFA_2pct'])/2, samples[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE) # aspirating 50 uL in two steps
+        p50_multi.dispense((VOLUME['TEAB'] + VOLUME['trypsin'] + VOLUME['TFA_2pct'])/2, collected_peptides[col].bottom(ASPIRATE_HEIGHT), rate=STANDARD_RATE)
         p50_multi.blow_out(collected_peptides[col].top(-5))
         #p50_multi.touch_tip(collected_peptides[col], radius=0.9, v_offset=-2, speed=60)
         dispose_tip(p50_multi)

@@ -75,7 +75,7 @@ Initiated writing a Python protocol for Ceres nanoparticle enrichment isolation 
 ### 10/06/2026 - Manual Tests
 Tested plasma with buffer and beads. The shaker needs to be set to 2200 rpm to fully resuspend beads. Thirty seconds is sufficient for this. Placing the plate on the magnetic block for 30 sec is also sufficient to pellet particles and form a ring.
 
-Also tested the subsequent washes with water and TEAB where beads start to become clumpy. Once the water is added there is a little bit of a flimy layer at the top where some bead loss may occur but seems unavoidable. Otherwise all the other steps and volumes see to be ok.
+Also tested the subsequent washes with water and TEAB where beads start to become clumpy. Once the water is added there is a little bit of a filmy layer at the top where some bead loss may occur but seems unavoidable. Otherwise all the other steps and volumes see to be ok.
 
 Created an initial version 1 of the protocol to test. Note that supernatant tips and supernatant tips are reused until the completion of the protocol.
 
@@ -133,3 +133,11 @@ Changes made:
 - [X] Remove setting the block temperature to 4C.
 
 Protocol updated to v3.1.
+
+(10/13/2026)
+Peptide quant of the results from V3 showed low yields. Higher volume transfers may be required during TCEP, IAM, and trypsin transfers (5 uL is quite low for such a large well/plate).
+
+### 10/23/2026: Creating version 3.2 of protocol
+Creating a version 3.2 where the TCEP, IAM, trypsin, and TEAB for digestion volumes are all increased to try and get better yields of peptides.
+
+Final digestion mix will contain 80 uL of TEAB + 10 uL of trypsin (25 ng/uL), then quench with 10 uL of 2% TFA (0.2% final)
