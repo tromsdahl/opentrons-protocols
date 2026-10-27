@@ -107,6 +107,7 @@ def run(ctx: protocol_api.ProtocolContext):
     # ===== TIMING & TEMP CONSTANTS =====
     MAGNET_TIME = 5 if dry_run else 30          # 30 sec Bead pellet time
     SHAKE_TIME = 5 if dry_run else 30           # 30 sec shaking
+    BEAD_BIND_TIME = 5 if dry_run else 1800     # 30 min bead binding time
     RED_TIME = 5 if dry_run else 600            # 10 min reduction time
     RED_TEMP = 65                               # 65C Reduction temperature
     RED_COOL_TIME = 5 if dry_run else 300       # 5 min to allow heater-shaker module to cool before alkylation
@@ -137,7 +138,8 @@ def run(ctx: protocol_api.ProtocolContext):
     STANDARD_RATE = 0.8           # Aspiration rate
     
     SHAKE_SPEED = 2200            # RPM
-    DIGEST_SHAKE_SPEED = 500     # RPM
+    BEAD_BIND_SHAKE_SPEED = 1000  # RPM
+    DIGEST_SHAKE_SPEED = 500      # RPM
     
     COL_RANGE = range(col_start, col_start + num_col)
 
@@ -408,6 +410,11 @@ def run(ctx: protocol_api.ProtocolContext):
     add_beads(p1000_multi, REAGENTS['beads_C'], VOLUME['bead_C'], tip_index=3)
     heater_shaker.set_and_wait_for_shake_speed(SHAKE_SPEED)
     ctx.delay(SHAKE_TIME, msg="Mixing beads C with samples.")
+    heater_shaker.deactivate_shaker()
+
+    # Allow bead binding time
+    heater_shaker.set_and_wait_for_shake_speed(BEAD_BIND_SHAKE_SPEED)
+    ctx.delay(BEAD_BIND_TIME, msg="Incubating samples for 30 min with shaking with beads.")
     heater_shaker.deactivate_shaker()
 
     # remove supernatant after bead binding
